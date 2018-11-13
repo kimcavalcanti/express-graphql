@@ -9,23 +9,24 @@ Create a GraphQL HTTP server with any HTTP web framework that supports connect s
 ## Installation
 
 ```sh
-npm install --save express-graphql
+npm install --save express-graphql-custom-req-limit
 ```
 
 
 ## Simple Setup
 
-Just mount `express-graphql` as a route handler:
+Just mount `express-graphql-custom-req-limit` as a route handler:
 
 ```js
 const express = require('express');
-const graphqlHTTP = require('express-graphql');
+const graphqlHTTP = require('express-graphql-custom-req-limit');
 
 const app = express();
 
 app.use('/graphql', graphqlHTTP({
   schema: MyGraphQLSchema,
-  graphiql: true
+  graphiql: true,
+  reqLimit: 10000,
 }));
 
 app.listen(4000);
@@ -102,7 +103,8 @@ The `graphQLParams` is provided as the object `{ query, variables, operationName
 app.use('/graphql', graphqlHTTP(async (request, response, graphQLParams) => ({
   schema: MyGraphQLSchema,
   rootValue: await someFunctionToGetRootValue(request),
-  graphiql: true
+  graphiql: true,
+  reqLimit: 10000
 })));
 ```
 
@@ -170,7 +172,8 @@ app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}));
 
 app.use('/graphql', graphqlHTTP({
   schema: MySessionAwareGraphQLSchema,
-  graphiql: true
+  graphiql: true,
+  reqLimit: 10000,
 }));
 ```
 

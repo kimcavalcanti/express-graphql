@@ -4,11 +4,11 @@
   "description": "Production ready GraphQL HTTP middleware.",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/graphql/express-graphql/issues"
+    "url": "https://github.com/kimcavalcanti/express-graphql/issues"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/graphql/express-graphql.git"
+    "url": "https://github.com/kimcavalcanti/express-graphql"
   },
   "keywords": [
     "express",
