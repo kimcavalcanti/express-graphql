@@ -410,7 +410,7 @@ export type GraphQLParams = {
  * HTTPClientRequest), Promise the GraphQL request parameters.
  */
 module.exports.getGraphQLParams = getGraphQLParams;
-function getGraphQLParams(request: $Request, reqLimit): Promise<GraphQLParams> {
+function getGraphQLParams(request: $Request, reqLimit = 100): Promise<GraphQLParams> {
   return parseBody(request, reqLimit).then(bodyData => {
     const urlData = (request.url && url.parse(request.url, true).query) || {};
     return parseGraphQLParams(urlData, bodyData);
