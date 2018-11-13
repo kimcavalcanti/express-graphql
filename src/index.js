@@ -28,11 +28,11 @@ import { renderGraphiQL } from './renderGraphiQL';
 
 import type {
   DocumentNode,
-  GraphQLError,
-  GraphQLSchema,
-  GraphQLFieldResolver,
-  ValidationContext,
-  ASTVisitor,
+    GraphQLError,
+    GraphQLSchema,
+    GraphQLFieldResolver,
+    ValidationContext,
+    ASTVisitor,
 } from 'graphql';
 import type { $Request, $Response } from 'express';
 
@@ -45,10 +45,10 @@ import type { $Request, $Response } from 'express';
  */
 export type Options =
   | ((
-      request: $Request,
-      response: $Response,
-      params?: GraphQLParams,
-    ) => OptionsResult)
+    request: $Request,
+    response: $Response,
+    params?: GraphQLParams,
+  ) => OptionsResult)
   | OptionsResult;
 export type OptionsResult = OptionsData | Promise<OptionsData>;
 export type OptionsData = {
@@ -101,6 +101,13 @@ export type OptionsData = {
    * A boolean to optionally enable GraphiQL mode.
    */
   graphiql?: ?boolean,
+
+  /**
+   * A req body dinamic limiter, you can chose the limit of the requistion
+   * default is 100kb. !!WARNING!!, this act can slow the performance.
+   */
+
+  reqLimit?: ?Number,
 
   /**
    * A resolver function to use when one is not provided by the schema.
@@ -163,6 +170,8 @@ function graphqlHTTP(options: Options): Middleware {
     let showGraphiQL;
     let query;
 
+    let { reqLimit } = options;
+
     let documentAST;
     let variables;
     let operationName;
@@ -171,7 +180,7 @@ function graphqlHTTP(options: Options): Middleware {
     // the asynchronous process below.
 
     // Parse the Request to get GraphQL request parameters.
-    return getGraphQLParams(request)
+    return getGraphQLParams(request, reqLimit)
       .then(
         graphQLParams => {
           params = graphQLParams;
@@ -275,7 +284,7 @@ function graphqlHTTP(options: Options): Middleware {
             throw httpError(
               405,
               `Can only perform a ${operationAST.operation} operation ` +
-                'from a POST request.',
+              'from a POST request.',
             );
           }
         }
@@ -376,7 +385,7 @@ function graphqlHTTP(options: Options): Middleware {
         if (!optionsData || typeof optionsData !== 'object') {
           throw new Error(
             'GraphQL middleware option function must return an options object ' +
-              'or a promise which will be resolved to an options object.',
+            'or a promise which will be resolved to an options object.',
           );
         }
 
@@ -401,8 +410,8 @@ export type GraphQLParams = {
  * HTTPClientRequest), Promise the GraphQL request parameters.
  */
 module.exports.getGraphQLParams = getGraphQLParams;
-function getGraphQLParams(request: $Request): Promise<GraphQLParams> {
-  return parseBody(request).then(bodyData => {
+function getGraphQLParams(request: $Request, reqLimit): Promise<GraphQLParams> {
+  return parseBody(request, reqLimit).then(bodyData => {
     const urlData = (request.url && url.parse(request.url, true).query) || {};
     return parseGraphQLParams(urlData, bodyData);
   });
